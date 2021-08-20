@@ -1,30 +1,27 @@
 {
-  "name": "pos-platform-v1-contracts",
+  "name": "pos-contracts",
   "version": "1.0.0",
-  "description": "Contracts to deploy Point-of-Sales over the Polis network",
+  "description": "Contracts to deploy decentralized Points-of-Sales",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/polischain/pos-platform-v1-contracts.git"
+    "url": "git+https://github.com/polischain/pos-contracts.git"
   },
   "author": "Enrique Berrueta",
   "license": "MIT",
   "bugs": {
-    "url": "https://https://github.com/polischain/pos-platform-v1-contracts/issues"
+    "url": "https://https://github.com/polischain/pos-contracts/issues"
   },
   "scripts": {
-    "flat": "./scripts/flat.sh"
+    "flat": "./scripts/flat.sh",
+    "compile": "hardhat compile"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.2",
-    "@nomiclabs/hardhat-truffle5": "2.0.0",
-    "@nomiclabs/hardhat-waffle": "2.0.1",
-    "@nomiclabs/hardhat-web3": "2.0.0",
-    "@openzeppelin/contracts": "3.4.1",
-    "@poanet/solidity-flattener": "3.0.6",
+    "@openzeppelin/contracts": "4.3.0",
     "chai": "4.3.4",
     "dotenv": "10.0.0"
   },
   "devDependencies": {
-    "hardhat": "2.6.0"
+    "hardhat": "2.6.1"
   }
 }
