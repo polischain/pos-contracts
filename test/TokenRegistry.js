@@ -15,7 +15,7 @@ describe('TokensRegistry', () => {
     });
 
     it('should add a new token', async () => {
-        await expect(this.registry.addToken("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"))
+        await expect(this.registry.addToken("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000"))
             .to.emit(this.registry, "TokenAdded")
             .withArgs("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
 

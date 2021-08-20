@@ -14,14 +14,19 @@ contract TokensRegistry is Ownable {
 
     // =============================================== Storage ========================================================
 
+    struct Token {
+        address id;
+        address dai_pair;
+        address weth_pair;
+        bool paused;
+    }
+
     /// @dev tokens array available for usage across the all the POS.
     address[] private _tokens;
 
     /// @dev tokens available for usage across the all the POS.
-    mapping (address => bool) private _supported;
+    mapping (address => Token) private _supported;
 
-    /// @dev tokens paused for usage across the all the POS.
-    mapping (address => bool) private _paused;
 
     // =============================================== Events =========================================================
 
@@ -42,10 +47,14 @@ contract TokensRegistry is Ownable {
     /// @dev adds a new token to the registry.
     ///      requires the token to not be supported before addition.
     /// @param token_ The address the token to add to the registry.
-    function addToken(address token_) external onlyOwner {
+    /// @param dai_pair The address the token to add to the registry. If the token doesn't
+    ///                 have a DAI (stable coin) pair use 0x0000000000000000000000000000000000000000
+    /// @param weth_pair The address the token to add to the registry.
+    function addToken(address token_, address dai_pair, address weth_pair) external onlyOwner {
         require(!isSupported(token_), "TokenRegistry: the token is already supported");
         _tokens.push(token_);
-        _supported[token_] = true;
+        Token memory t = Token(token_, dai_pair, weth_pair, false);
+        _supported[token_] = t;
         emit TokenAdded(token_);
     }
 
@@ -54,7 +63,7 @@ contract TokensRegistry is Ownable {
     /// @param token_ The address the token to pause.
     function pauseToken(address token_) external onlyOwner {
         require(isSupported(token_), "TokenRegistry: the token is not supported");
-        _paused[token_] = true;
+        _supported[token_].paused = true;
         emit TokenPaused(token_);
     }
 
@@ -63,8 +72,8 @@ contract TokensRegistry is Ownable {
     /// @param token_ The address the token to resume.
     function resumeToken(address token_) external onlyOwner {
         require(isSupported(token_), "TokenRegistry: the token is not supported");
-        require(_paused[token_], "TokenRegistry: the token is not paused");
-        _paused[token_] = false;
+        require(isPaused(token_), "TokenRegistry: the token is not paused");
+        _supported[token_].paused = false;
         emit TokenResumed(token_);
     }
 
@@ -78,13 +87,19 @@ contract TokensRegistry is Ownable {
     /// @dev returns true if provided token is supported.
     /// @param token_ Address of the token to query.
     function isSupported(address token_) public view returns (bool) {
-        return _supported[token_];
+        return _supported[token_].id != address(0);
+    }
+
+    /// @dev returns true if provided token is paused.
+    /// @param token_ Address of the token to query.
+    function isPaused(address token_) public view returns (bool) {
+        return _supported[token_].paused;
     }
 
     /// @dev returns true if provided token is supported and active.
     /// @param token_ Address of the token to query.
     function isActive(address token_) public view returns (bool) {
-        return isSupported(token_) && !_paused[token_];
+        return isSupported(token_) && !isPaused(token_);
     }
 
 }
