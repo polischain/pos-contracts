@@ -2,6 +2,7 @@
 pragma solidity 0.8.7;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "../interfaces/ITokensRegistry.sol";
 
 /**
  * @dev TokenRegistry is the contract in charge of whitelist tokens usable
@@ -49,10 +50,11 @@ contract TokensRegistry is Ownable {
     }
 
     /// @dev pauses a previously added token.
-    ///      requires the token to be supported and to be active.
+    ///      requires the token to be supported.
     /// @param token_ The address the token to pause.
     function pauseToken(address token_) external onlyOwner {
-
+        require(isSupported(token_), "TokenRegistry: the token is not supported");
+        _paused[token_] = true;
         emit TokenPaused(token_);
     }
 
@@ -60,11 +62,18 @@ contract TokensRegistry is Ownable {
     ///      requires the token to be supported and to be paused.
     /// @param token_ The address the token to resume.
     function resumeToken(address token_) external onlyOwner {
-
+        require(isSupported(token_), "TokenRegistry: the token is not supported");
+        require(_paused[token_], "TokenRegistry: the token is not paused");
+        _paused[token_] = false;
         emit TokenResumed(token_);
     }
 
     // =============================================== Getters ========================================================
+
+    /// @dev returns all supported tokens.
+    function getSupportedTokens() public view returns (address[] memory) {
+        return _tokens;
+    }
 
     /// @dev returns true if provided token is supported.
     /// @param token_ Address of the token to query.

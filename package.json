@@ -17,7 +17,12 @@
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.2",
+    "@nomiclabs/hardhat-waffle": "2.0.1",
     "@openzeppelin/contracts": "4.3.0",
+    "@openzeppelin/test-helpers": "0.5.13",
+    "ethers": "5.4.5",
+    "ethereum-waffle": "3.4.0",
+    "bn.js": "5.2.0",
     "chai": "4.3.4",
     "dotenv": "10.0.0"
   },

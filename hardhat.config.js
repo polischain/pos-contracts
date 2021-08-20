@@ -1,7 +1,5 @@
-require('@nomiclabs/hardhat-ethers');
+require("@nomiclabs/hardhat-waffle");
 require('dotenv').config()
-
-const key = process.env.PRIVATE_KEY
 
 module.exports = {
     defaultNetwork: "hardhat",
