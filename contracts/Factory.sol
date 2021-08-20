@@ -2,6 +2,7 @@
 pragma solidity 0.8.7;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./pos/PointOfSale.sol";
 
 /**
  * @dev Factory contract deploys and stores implementations of Points-of-Sales
@@ -18,8 +19,8 @@ contract Factory is Ownable {
     /// @dev active boolean enable/disable POS deployments.
     bool public active;
 
-    /// @dev swapContract is the contract used to automate coin-conversion on payment.
-    address public swapContract;
+    /// @dev swapHelperContract is the contract used to automate trades on payments.
+    address public swapHelperContract;
 
     /// @dev tokensRegistry is the contract to whitelist tokens.
     address public tokensRegistry;
@@ -45,11 +46,11 @@ contract Factory is Ownable {
     // =============================================== Setters ========================================================
 
     /// @dev Constructor.
-    /// @param swapContract_ The address of the proxy implementation of the `SwapContract` contract.
+    /// @param swapHelperContract_ The address of the proxy implementation of the `SwapHelper` contract.
     /// @param tokensRegistry_ The address of the proxy implementation of the `TokenRegistry` contract.
-    constructor(address swapContract_, address tokensRegistry_) {
+    constructor(address swapHelperContract_, address tokensRegistry_) {
         active = false;
-        swapContract = swapContract_;
+        swapHelperContract = swapHelperContract_;
         tokensRegistry = tokensRegistry_;
     }
 
@@ -61,9 +62,10 @@ contract Factory is Ownable {
 
     /// @dev deploys a POS contract with the `msg.sender` as the owner.
     ///      It only requires the user to have no previous deployment.
-    // TODO
-    function deploy() external onlyActive {
+    function deploy() external onlyActive returns(PointOfSale) {
         require(deployments[msg.sender] != address(0), "Factory: user already has a deployment");
+        PointOfSale p = new PointOfSale(tokensRegistry, swapHelperContract);
+        return p;
     }
 
     // =============================================== Getters ========================================================
