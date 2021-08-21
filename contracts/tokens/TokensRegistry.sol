@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.7;
+pragma solidity 0.8.4;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../interfaces/ITokensRegistry.sol";
 
 /**
@@ -10,10 +10,15 @@ import "../interfaces/ITokensRegistry.sol";
  *      This tokens are usually with enough liquidity to make sure token conversion
  *      is possible without any significant loss for users.
  */
-contract TokensRegistry is Ownable {
+contract TokensRegistry is OwnableUpgradeable {
 
     // =============================================== Storage ========================================================
 
+    /// @dev Token is an struct to include token information
+    /// @params id the contract address of the token.
+    /// @params dai_pair the pair address against DAI for the selected DEX.
+    /// @params weth_pair the pair address against WETH for the selected DEX.
+    /// @params paused boolean to enabled/disable the token on the platform.
     struct Token {
         address id;
         address dai_pair;
