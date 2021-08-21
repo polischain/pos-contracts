@@ -18,11 +18,10 @@ contract RecurrentPayment is Ownable, BasePayment {
     // =============================================== Setters ========================================================
 
     constructor(
-        bool autoConvert_,
-        address swapHelperContract,
-        address tokensRegistry_,
-        uint256 payment_
-    ) BasePayment(autoConvert_, swapHelperContract, tokensRegistry_, payment_) {}
+        string memory id_,
+        uint256 amount_,
+        address registry_
+    ) BasePayment(id_, amount_, registry_) {}
 
     // =============================================== Getters ========================================================
     // =============================================== Internal =======================================================

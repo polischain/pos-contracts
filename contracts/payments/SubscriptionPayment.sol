@@ -14,6 +14,7 @@ contract SubscriptionPayment is Ownable, BasePayment {
 
     // =============================================== Storage ========================================================
 
+    /// @dev the amount of blocks on which the subscription is charged.
     uint256 public periodicity;
 
     // =============================================== Events =========================================================
@@ -21,12 +22,11 @@ contract SubscriptionPayment is Ownable, BasePayment {
     // =============================================== Setters ========================================================
 
     constructor(
-        uint256 periodicity_,
-        bool autoConvert_,
-        address swapHelperContract,
-        address tokensRegistry_,
-        uint256 payment_
-    ) BasePayment(autoConvert_, swapHelperContract, tokensRegistry_, payment_) {
+        string memory id_,
+        uint256 amount_,
+        address registry_,
+        uint256 periodicity_
+    ) BasePayment(id_, amount_, registry_) {
         periodicity = periodicity_;
     }
 
