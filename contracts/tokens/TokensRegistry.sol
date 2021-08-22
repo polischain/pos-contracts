@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/ITokensRegistry.sol";
 
 /**
@@ -10,7 +10,7 @@ import "../interfaces/ITokensRegistry.sol";
  *      This tokens are usually with enough liquidity to make sure token conversion
  *      is possible without any significant loss for users.
  */
-contract TokensRegistry is OwnableUpgradeable {
+contract TokensRegistry is Ownable {
 
     // =============================================== Storage ========================================================
 

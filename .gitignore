@@ -1,8 +1,12 @@
+# IDE
 .idea/
+
+# Node
 node_modules/
-contracts/flat/
+.env
+
+# Hardhat
+flat/
 artifacts/
 cache/
-.env
 .openzeppelin/
-*_flatten.sol
