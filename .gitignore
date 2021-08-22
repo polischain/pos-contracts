@@ -1,5 +1,6 @@
 # IDE
 .idea/
+.vscode/
 
 # Node
 node_modules/
@@ -10,3 +11,4 @@ flat/
 artifacts/
 cache/
 .openzeppelin/
+bin/
