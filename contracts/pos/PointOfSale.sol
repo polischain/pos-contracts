@@ -97,4 +97,9 @@ contract PointOfSale is Ownable {
         return _payments;
     }
 
+    /// @dev Returns payment by a specified id
+    function getPayment(string memory id_) public view onlyOwner returns (Payment memory) {
+        return payments[id_];
+    }
+
 }

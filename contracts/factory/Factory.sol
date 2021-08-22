@@ -2,7 +2,7 @@
 pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./pos/PointOfSale.sol";
+import "../pos/PointOfSale.sol";
 
 /**
  * @dev Factory contract deploys and stores implementations of Points-of-Sales
@@ -58,8 +58,11 @@ contract Factory is Ownable {
     /// @dev deploys a POS contract with the `msg.sender` as the owner.
     ///      It only requires the user to have no previous deployment.
     function deploy() external onlyActive returns(PointOfSale) {
-        require(deployments[msg.sender] != address(0), "Factory: user already has a deployment");
+        require(deployments[msg.sender] == address(0), "Factory: user already has a deployment");
         PointOfSale p = new PointOfSale(tokensRegistry);
+        p.transferOwnership(msg.sender);
+        deployments[msg.sender] = address(p);
+        emit Deployed(msg.sender, address(p));
         return p;
     }
 
