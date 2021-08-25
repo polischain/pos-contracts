@@ -2,7 +2,10 @@
 pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
+import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "@uniswap/v2-periphery/contracts/interfaces/IWETH.sol";
 
 /**
  * @dev SwapHelper is a wrapper around UniSwap based DEX to submit trades.
@@ -13,6 +16,12 @@ contract SwapHelper is Ownable {
 
     /// @dev Contract address of the DEX router.
     address public router;
+
+    /// @dev Contract address for DAI token.
+    address public DAI;
+
+    /// @dev Contract address for WETH.
+    address public WETH;
 
     /// @dev Pair of WETH/DAI for the DEX.
     address public WETH_DAI_PAIR;
@@ -25,6 +34,47 @@ contract SwapHelper is Ownable {
     constructor(address _router, address _weth_dai_pair) {
         router = _router;
         WETH_DAI_PAIR = _weth_dai_pair;
+    }
+
+    /// @dev Performs a swap using ETH to DAI.
+    //  @param daiAmount The minimum expected amount of DAI to receive.
+    function swapWETHToDAI(uint256 daiAmount) public payable {
+        address[] memory path = new address[](2);
+        path[0] = WETH;
+        path[1] = DAI;
+
+        IUniswapV2Router02(router).swapExactETHForTokens(daiAmount, path, address(this), block.timestamp + 200);
+    }
+
+    /// @dev Performs a swap using any token to DAI.
+    /// @param _token The converting token address.
+    //  @param tokenAmount The amount of tokens spending to be converted.
+    //  @param daiAmount The minimum expected amount of DAI to receive.
+    //  @param useWETH Boolean to enable using WETH for the sell path.
+    function swapTokenToDAI(address _token, uint256 tokenAmount, uint256 daiAmount, bool useWETH) public {
+
+        IERC20(_token).transferFrom(msg.sender, address(this), tokenAmount);
+
+        address[] memory path;
+
+        if (useWETH) {
+            path = new address[](3);
+            path[0] = _token;
+            path[1] = WETH;
+            path[2] = DAI;
+        } else {
+            path = new address[](2);
+            path[0] = _token;
+            path[1] = DAI;
+        }
+
+        uint256 allowance = IERC20(_token).allowance(address(this), router);
+        if (allowance < tokenAmount) {
+            IERC20(_token).approve(router, tokenAmount);
+        }
+
+        IUniswapV2Router02(router).swapExactTokensForTokens(tokenAmount, daiAmount, path, address(this), block.timestamp + 200);
+
     }
 
     // =============================================== Getters ========================================================
