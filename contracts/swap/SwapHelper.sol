@@ -31,19 +31,21 @@ contract SwapHelper is Ownable {
     /// @dev Constructor.
     /// @param _router The contract address of the DEX router.
     /// @param _weth_dai_pair The contract address of the WETH/DAI pair on the DEX.
-    constructor(address _router, address _weth_dai_pair) {
+    constructor(address _router, address _dai, address _weth, address _weth_dai_pair)  {
         router = _router;
         WETH_DAI_PAIR = _weth_dai_pair;
+        DAI = _dai;
+        WETH = _weth;
     }
 
     /// @dev Performs a swap using ETH to DAI.
     //  @param daiAmount The minimum expected amount of DAI to receive.
-    function swapWETHToDAI(uint256 daiAmount) public payable {
+    function swapETHToDAI(uint256 daiAmount) public payable {
         address[] memory path = new address[](2);
         path[0] = WETH;
         path[1] = DAI;
 
-        IUniswapV2Router02(router).swapExactETHForTokens(daiAmount, path, address(this), block.timestamp + 200);
+        IUniswapV2Router02(router).swapExactETHForTokens{value: msg.value}(daiAmount, path, msg.sender, block.timestamp + 200);
     }
 
     /// @dev Performs a swap using any token to DAI.
@@ -73,7 +75,7 @@ contract SwapHelper is Ownable {
             IERC20(_token).approve(router, tokenAmount);
         }
 
-        IUniswapV2Router02(router).swapExactTokensForTokens(tokenAmount, daiAmount, path, address(this), block.timestamp + 200);
+        IUniswapV2Router02(router).swapExactTokensForTokens(tokenAmount, daiAmount, path, msg.sender, block.timestamp + 200);
 
     }
 
@@ -93,6 +95,15 @@ contract SwapHelper is Ownable {
         }
     }
 
+    /// @dev Calculates the amount ETH required to fulfill `daiPrice`.
+    //  @param daiPrice The amount of DAI that needs to be fulfilled.
+    //  @param slippage percentage of variation of token price.
+    function getETHAmount(uint256 daiPrice, uint256 slippage) public view returns (uint256) {
+        require(daiPrice > 0, "SwapHelper: daiPrice should be more than 0");
+        uint256 amountETH =  daiPrice / _daiToWETH();
+        return amountETH + ((amountETH * slippage) / 100);
+    }
+
     // =============================================== Internal ========================================================
 
     /// @dev Calculates the amount of tokens required to fulfill the `daiPrice`.
@@ -100,9 +111,9 @@ contract SwapHelper is Ownable {
     //  @param daiPrice The amount of DAI that needs to be fulfilled.
     //  @param slippage percentage of variation of token price.
     function _calcTokenAmount(address pair, uint256 daiPrice, uint256 slippage) internal view returns (uint256) {
-        (uint112 tokenReserves, uint112 daiTokenReserves,) = IUniswapV2Pair(pair).getReserves();
-        uint256 tokenPrice = daiPrice * (tokenReserves / daiTokenReserves);
-        return tokenPrice + ((tokenPrice * slippage) / 100);
+        (uint112 token, uint112 dai,) = IUniswapV2Pair(pair).getReserves();
+        uint256 amount = daiPrice * (dai / token );
+        return amount + ((amount * slippage) / 100);
     }
 
     /// @dev Calculates the amount of tokens required to fulfill the `daiPrice` using token/weth as the pair.
@@ -110,15 +121,16 @@ contract SwapHelper is Ownable {
     //  @param daiPrice The amount of DAI that needs to be fulfilled.
     //  @param slippage percentage of variation of token price.
     function _calcTokenAmountWETH(address pair, uint256 daiPrice, uint256 slippage) internal view returns (uint256) {
-        (uint112 tokenReserves, uint112 wethTokenReserves,) = IUniswapV2Pair(pair).getReserves();
-        uint256 tokenPrice = (daiPrice * _daiToWETH()) * (tokenReserves / wethTokenReserves);
-        return tokenPrice + ((tokenPrice * slippage) / 100);
+        uint256 amountETH =  daiPrice / _daiToWETH();
+        (uint112 token, uint112 weth,) = IUniswapV2Pair(pair).getReserves();
+        uint256 amount = amountETH * (weth / token);
+        return amount + ((amount * slippage) / 100);
     }
 
-    /// @dev Returns the amount of WETH required to buy DAI.
+    /// @dev Returns the amount of DAI required to buy 1 ETH.
     function _daiToWETH() internal view returns (uint256) {
         (uint112 daiReserves, uint112 wethReserves,) = IUniswapV2Pair(WETH_DAI_PAIR).getReserves();
-        return daiReserves / wethReserves ;
+        return (daiReserves / wethReserves);
     }
 
 }
