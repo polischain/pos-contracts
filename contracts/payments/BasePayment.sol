@@ -22,8 +22,11 @@ contract BasePayment is Ownable {
     /// @dev amount to pay in DAI
     uint256 public amount;
 
-    /// @dev TokenRegistry address
-    address public registry;
+    /// @dev tokensRegistry is the contract to whitelist tokens.
+    address public tokensRegistry;
+
+    /// @dev swapHelper is the contract to perform automatic swaps.
+    address public swapHelper;
 
     /// @dev payments history
     PaymentInformation[] private history;
@@ -44,13 +47,15 @@ contract BasePayment is Ownable {
     // =============================================== Setters ========================================================
 
     /// @dev Constructor
-    /// @param id_ payment instance unique id.
-    //  @param amount_ amount to pay to emit the event.
-    //  @param registry_ TokenRegistry address
-    constructor(string memory id_, uint256 amount_, address registry_) {
+    /// @param id_ Payment instance unique id.
+    //  @param amount_ Amount in DAI to pay to emit the event.
+    /// @param tokensRegistry_ The address of the proxy implementation of the `TokenRegistry` contract.
+    /// @param swapHelper_ The address of the proxy implementation of the `SwapHelper` contract.
+    constructor(string memory id_, uint256 amount_, address tokensRegistry_, address swapHelper_) {
         ID = id_;
         amount = amount_;
-        registry = registry_;
+        tokensRegistry = tokensRegistry_;
+        swapHelper = swapHelper_;
     }
 
 

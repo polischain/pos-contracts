@@ -16,8 +16,12 @@ contract PointOfSale is Ownable {
     /// @dev Enum to define different payment contracts.
     enum PaymentType{ RECURRENT, SUBSCRIPTION }
 
-    /// @dev TokensRegistry contract address
-    address public tokenRegistryContract;
+    /// @dev tokensRegistry is the contract to whitelist tokens.
+    address public tokensRegistry;
+
+    /// @dev swapHelper is the contract to perform automatic swaps.
+    address public swapHelper;
+
 
     /// @dev Struct to define a payment contract
     /// @param id Unique id for the payment instance.
@@ -58,10 +62,12 @@ contract PointOfSale is Ownable {
 
     // =============================================== Setters ========================================================
 
-    /// @dev Constrictor
-    /// @param tokenRegistry_ The address of the supported tokens.
-    constructor(address tokenRegistry_) {
-        tokenRegistryContract = tokenRegistry_;
+    /// @dev Constructor
+    /// @param tokensRegistry_ The address of the proxy implementation of the `TokenRegistry` contract.
+    /// @param swapHelper_ The address of the proxy implementation of the `SwapHelper` contract.
+    constructor(address tokensRegistry_, address swapHelper_) {
+        tokensRegistry = tokensRegistry_;
+        swapHelper = swapHelper_;
     }
 
     /// @dev create a new payment instance
@@ -73,10 +79,10 @@ contract PointOfSale is Ownable {
         require(payments[id].deployment == address(0), "PointOfSale: payment id is already used");
         BasePayment i;
         if (_type == PaymentType.RECURRENT) {
-            i = new RecurrentPayment(id, amount, tokenRegistryContract);
+            i = new RecurrentPayment(id, amount, tokensRegistry, swapHelper);
         }
         if (_type == PaymentType.SUBSCRIPTION) {
-            i = new SubscriptionPayment(id, amount, tokenRegistryContract, periodicity);
+            i = new SubscriptionPayment(id, amount, periodicity, tokensRegistry, swapHelper);
         }
         payments[id] = Payment(id, _type, amount, periodicity, address(i));
         _payments.push(id);

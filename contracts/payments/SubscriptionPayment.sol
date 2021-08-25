@@ -21,12 +21,19 @@ contract SubscriptionPayment is Ownable, BasePayment {
     // ============================================== Modifiers =======================================================
     // =============================================== Setters ========================================================
 
+    /// @dev Constructor
+    /// @param id_ Payment instance unique id.
+    //  @param amount_ Amount in DAI to pay to emit the event.
+    //  @param periodicity_ The amount of blocks required to pass to charge the user.
+    /// @param tokensRegistry_ The address of the proxy implementation of the `TokenRegistry` contract.
+    /// @param swapHelper_ The address of the proxy implementation of the `SwapHelper` contract.
     constructor(
         string memory id_,
         uint256 amount_,
-        address registry_,
-        uint256 periodicity_
-    ) BasePayment(id_, amount_, registry_) {
+        uint256 periodicity_,
+        address tokensRegistry_,
+        address swapHelper_
+    ) BasePayment(id_, amount_, tokensRegistry_, swapHelper_) {
         periodicity = periodicity_;
     }
 

@@ -17,11 +17,17 @@ contract RecurrentPayment is Ownable, BasePayment {
     // ============================================== Modifiers =======================================================
     // =============================================== Setters ========================================================
 
+    /// @dev Constructor
+    /// @param id_ Payment instance unique id.
+    //  @param amount_ Amount in DAI to pay to emit the event.
+    /// @param tokensRegistry_ The address of the proxy implementation of the `TokenRegistry` contract.
+    /// @param swapHelper_ The address of the proxy implementation of the `SwapHelper` contract.
     constructor(
         string memory id_,
         uint256 amount_,
-        address registry_
-    ) BasePayment(id_, amount_, registry_) {}
+        address tokensRegistry_,
+        address swapHelper_
+    ) BasePayment(id_, amount_, tokensRegistry_, swapHelper_) {}
 
     // =============================================== Getters ========================================================
     // =============================================== Internal =======================================================

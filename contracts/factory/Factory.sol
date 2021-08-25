@@ -22,6 +22,9 @@ contract Factory is Ownable {
     /// @dev tokensRegistry is the contract to whitelist tokens.
     address public tokensRegistry;
 
+    /// @dev swapHelper is the contract to perform automatic swaps.
+    address public swapHelper;
+
     // =============================================== Events ========================================================
 
 
@@ -44,9 +47,10 @@ contract Factory is Ownable {
 
     /// @dev Constructor.
     /// @param tokensRegistry_ The address of the proxy implementation of the `TokenRegistry` contract.
-    constructor(address tokensRegistry_) {
+    constructor(address tokensRegistry_, address swapHelper_) {
         active = false;
         tokensRegistry = tokensRegistry_;
+        swapHelper = swapHelper_;
     }
 
     /// @dev enables or disables the contract to deploy POS contracts.
@@ -59,7 +63,7 @@ contract Factory is Ownable {
     ///      It only requires the user to have no previous deployment.
     function deploy() external onlyActive returns(PointOfSale) {
         require(deployments[msg.sender] == address(0), "Factory: user already has a deployment");
-        PointOfSale p = new PointOfSale(tokensRegistry);
+        PointOfSale p = new PointOfSale(tokensRegistry, swapHelper);
         p.transferOwnership(msg.sender);
         deployments[msg.sender] = address(p);
         emit Deployed(msg.sender, address(p));
