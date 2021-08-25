@@ -6,12 +6,17 @@ describe('Factory', () => {
     before(async () => {
 
         const TokensRegistry = await ethers.getContractFactory("TokensRegistry");
+        const SwapHelper = await ethers.getContractFactory("SwapHelper");
+
         const Factory = await ethers.getContractFactory("Factory");
 
         this.registry = await TokensRegistry.deploy();
         await this.registry.deployed();
 
-        this.factory = await Factory.deploy(this.registry.address);
+        this.swap = await SwapHelper.deploy("0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000");
+        await this.swap.deployed();
+
+        this.factory = await Factory.deploy(this.registry.address, this.swap.address);
         await this.factory.deployed();
 
     });

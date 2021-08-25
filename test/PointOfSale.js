@@ -9,7 +9,10 @@ describe('PointOfSale', () => {
 
         this.owner = owner;
         this.minted = 100000;
+
         const TokensRegistry = await ethers.getContractFactory("TokensRegistry");
+        const SwapHelper = await ethers.getContractFactory("SwapHelper");
+
         const MockToken = await ethers.getContractFactory("MockToken");
         const Factory = await ethers.getContractFactory("Factory");
         const PointOfSale = await ethers.getContractFactory("PointOfSale");
@@ -22,7 +25,10 @@ describe('PointOfSale', () => {
 
         await this.registry.addToken(this.token.address, "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000")
 
-        this.factory = await Factory.deploy(this.registry.address);
+        this.swap = await SwapHelper.deploy("0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000");
+        await this.swap.deployed();
+
+        this.factory = await Factory.deploy(this.registry.address, this.swap.address);
         await this.factory.deployed();
 
         await this.factory.setActive(true);
