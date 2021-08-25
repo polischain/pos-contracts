@@ -13,7 +13,7 @@ describe('Factory', () => {
         this.registry = await TokensRegistry.deploy();
         await this.registry.deployed();
 
-        this.swap = await SwapHelper.deploy("0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000");
+        this.swap = await SwapHelper.deploy("0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000");
         await this.swap.deployed();
 
         this.factory = await Factory.deploy(this.registry.address, this.swap.address);

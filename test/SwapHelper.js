@@ -80,7 +80,7 @@ describe('SwapHelper', () => {
             let tokenAmountUsingDAI = await this.swap.getTokenAmount(this.pairDAI.address, wei, 2, false);
             let tokenAmountUsingWETH = await this.swap.getTokenAmount(this.pairWETH.address, wei, 2, true);
             let ethAmount = await this.swap.getETHAmount(wei, 2);
-            expect(tokenAmountUsingDAI).eq(tokenAmountUsingWETH,)
+            expect(tokenAmountUsingDAI).eq(tokenAmountUsingWETH)
             expect(tokenAmountUsingDAI.toString()).eq(prices[i].expected)
             expect(ethAmount.toString()).eq(prices[i].expected_eth)
         }
