@@ -1,5 +1,4 @@
 require("@nomiclabs/hardhat-waffle");
-require('@openzeppelin/hardhat-upgrades');
 
 require('dotenv').config()
 
@@ -8,7 +7,13 @@ let private_key = process.env.PRIVATE_KEY;
 module.exports = {
     defaultNetwork: "hardhat",
     networks: {
-        hardhat: {},
+        hardhat: {
+            chainId: 333888,
+            blockGasLimit: 20000000,
+            forking: {
+                url: "https://sparta-rpc.polis.tech",
+            },
+        },
         sparta: {
             chainId: 333888,
             gasPrice: 1000000000,
